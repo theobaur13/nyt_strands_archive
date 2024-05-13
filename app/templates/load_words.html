@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Load Words {{ date }}</h2>
+<div class="word-grid"></div>
+<div class="word-list"></div>
+<button id="add-word-button">Add Word</button>
+<button id="clear-word-button">Clear Word</button>
+<button id="submit-words-button">Submit Words</button>
+<script>
+    const strand = {{ strand|tojson }};
+    const letters = {{ letters|tojson }};
+    const word_grid = document.querySelector('.word-grid');
+    const word_list = document.querySelector('.word-list');
+    let words = [];
+    let current_word_index = 0;
+</script>
+
+<script src="{{ url_for('static', filename='js/word_grid.js') }}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        render_word_grid(strand, letters);
+    });
+
+    document.getElementById('add-word-button').addEventListener('click', function() {
+        // Make the data-clickable attribute true for all the letters
+        const letter_elements = document.querySelectorAll('.letter');
+        letter_elements.forEach(function(letter_element) {
+            letter_element.setAttribute('data-clickable', 'true');
+        });
+
+        // Make letters that are already in the current or previous words unclickable
+        const used_letters = words.flatMap(word => word.letters);
+        const used_letter_indices = used_letters.map(letter => letter.index);
+        letter_elements.forEach(function(letter_element) {
+            const letter_grid_index = parseInt(letter_element.getAttribute('id'));
+            if (used_letter_indices.includes(letter_grid_index)) {
+                letter_element.setAttribute('data-clickable', 'false');
+                letter_element.setAttribute('data-selected', 'true');
+            }
+            else {
+                letter_element.setAttribute('data-selected', 'false');
+            }
+        });
+
+        // Add a new word to the word list
+        const word = {
+            word: '',
+            letters: []
+        };
+        words.push(word);
+
+        // Display the word in the word list
+        const word_element = document.createElement('div');
+        word_element.classList.add('word');
+        word_element.textContent = word.word;
+        word_list.appendChild(word_element);
+
+        // Set the current word index to the last word in the list
+        current_word_index = words.length - 1;
+    });
+
+    // If a letter is clicked, add it to the current word in the word list
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('letter') && event.target.getAttribute('data-clickable') === 'true') {
+            const letter = event.target.textContent;
+            const letter_grid_index = parseInt(event.target.getAttribute('id'));
+            const letter_object = letters.find(letter => letter.index === letter_grid_index)
+            letter_object.wordletter_index = words[current_word_index].letters.length;
+            const word = words[current_word_index];
+            word.word += letter;
+            word.letters.push(letter_object);
+
+            // Update the word in the word list
+            const word_element = word_list.children[current_word_index];
+            word_element.textContent = word.word;
+
+            // Make the letter unclickable
+            event.target.setAttribute('data-clickable', 'false');
+            
+            // Make all the other letters unclickable apart from the letters that are adjacent to the last letter in the 6x8 grid (including diagonals)
+            const adjacent_letters = get_adjacent_letters(letter_object, letters);
+            const adjacent_letter_indices = adjacent_letters.map(letter => letter.index);
+            const letter_elements = document.querySelectorAll('.letter');
+            letter_elements.forEach(function(letter_element) {
+                const letter_grid_index = parseInt(letter_element.getAttribute('id'));
+                if (!adjacent_letter_indices.includes(letter_grid_index)) {
+                    letter_element.setAttribute('data-clickable', 'false');
+                }
+                else {
+                    letter_element.setAttribute('data-clickable', 'true');
+                }
+            });
+
+            // Make letters that are already in the current or previous words unclickable
+            const used_letters = words.flatMap(word => word.letters);
+            const used_letter_indices = used_letters.map(letter => letter.index);
+            letter_elements.forEach(function(letter_element) {
+                const letter_grid_index = parseInt(letter_element.getAttribute('id'));
+                if (used_letter_indices.includes(letter_grid_index)) {
+                    letter_element.setAttribute('data-clickable', 'false');
+                }
+            });
+        }
+        else if (event.target.classList.contains('word')) {
+            const word_index = Array.from(word_list.children).indexOf(event.target);
+            current_word_index = word_index;
+        }
+    });
+
+    document.getElementById('clear-word-button').addEventListener('click', function() {
+        const word = words[current_word_index];
+        word.word = '';
+        word.letters = [];
+        const word_element = word_list.children[current_word_index];
+        word_element.textContent = word.word;
+
+        const letter_elements = document.querySelectorAll('.letter');
+        letter_elements.forEach(function(letter_element) {
+            letter_element.setAttribute('data-clickable', 'true');
+        });
+    });
+
+    document.getElementById('submit-words-button').addEventListener('click', function() {
+        var data = {
+            strand_id: strand.id,
+            words: [],
+        };
+        words.forEach(function(word) {
+            const word_data = {
+                word: word.word,
+                spanagram: false,
+                wordletters: []
+            };
+            
+            word.letters.forEach(function(letter) {
+                const wordletter_data = {
+                    index: letter.wordletter_index,
+                    letter_id: letter.id
+                };
+                word_data.wordletters.push(wordletter_data);
+            });
+            data.words.push(word_data);
+        });
+        fetch('/data_loader', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+    });
+</script>
+
+{% endblock %}

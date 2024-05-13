@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Load Strand {{ date }}</h2>
+<form method="POST">
+    {{ theme_letter_grid_form.hidden_tag() }}
+
+    {% if theme_letter_grid_form.theme %}
+        <div class="grid-theme">
+            {{ theme_letter_grid_form.theme.label }}
+            {{ theme_letter_grid_form.theme }}
+        </div>
+    {% endif %}
+
+    <div class="grid-container">
+        {% for field in theme_letter_grid_form %}
+            {% if field.name != 'theme' and field.name != 'submit' %}
+                <div class="grid-item">{{ field(size=1) }}</div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if theme_letter_grid_form.submit %}
+        <div class="grid-submit">
+            {{ theme_letter_grid_form.submit.label }}
+            {{ theme_letter_grid_form.submit }}
+        </div>
+    {% endif %}
+</form>
+{% endblock %}

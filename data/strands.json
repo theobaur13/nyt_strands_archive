@@ -1,0 +1,11 @@
+{
+    "strand_1": {
+        "id": 1,
+        "date": {
+            "day": 10,
+            "month": 5,
+            "year": 2024
+        },
+        "theme": "Like a rocket"
+    }
+}

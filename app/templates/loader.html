@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Loader</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    {{ form.date.label }} {{ form.date }}
+    {{ form.submit() }}
+</form>
+{% endblock %}
