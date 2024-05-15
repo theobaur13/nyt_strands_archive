@@ -1,32 +1,89 @@
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr); /* 6 columns */
-    gap: 10px; /* Spacing between fields */
-}
 
+/* used in loader */
 .word-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr); /* 6 columns */
-    gap: 10px; /* Spacing between fields */
-    padding-left: 35%;
-    padding-right: 35%;
+    grid-template-columns: repeat(6, 54px);
+    gap: 10px;
 }
 
 .grid-item {
-    padding: 5px; /* Padding around fields */
+    padding: 5px;
+}
+/*  */
+
+.game-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.theme-box {
+    background-color: #f9f9f9;
+    text-align: center;
+    user-select: none;
+    border-radius: 8px;
+    border: 1px solid #bcbcbc;
+    width: min(222px + 15vw,474px);
+    height: 79px;
+    margin: 30px;
+}
+
+.theme-box h2 {
+    font-family: "Libre Franklin", sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 10px;
+    padding: 0;
+}
+
+.theme-box h3 {
+    font-family: "Libre Franklin", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+    padding: 3px;
+    background-color:rgb(198, 230, 250);
+}
+
+.strand-box {
+    text-align: center;
+    justify-content: center;
+    display: inline-block;
+    margin: 30px;
+}
+
+.strand {
+    font-family: "Libre Franklin", sans-serif;
+    font-size: 30px;
+    font-weight: 600;
+    height: 36px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 54px); /* 6 columns */
+    gap: 10px; /* Spacing between fields */
 }
 
 .letter {
     font-family: "Libre Franklin", sans-serif;
+    font-weight: 440;
     padding-top: 2px;
     width: 44px;
     height: 42px;
     font-size: 1.5em;
-    padding: 5px;
+    /* padding: 5px; */
     border-radius:50%;
     display: flex;
     align-items: center;
-    justify-content: center; 
+    justify-content: center;
+    user-select: none;
+}
+
+.letter:hover {
+    scale: 1.1;
 }
 
 .letter[data-clickable="true"] {
@@ -37,12 +94,11 @@
     cursor: not-allowed;
 }
 
-.letter[data-correct="true"] {
-    cursor: not-allowed;
-    background-color: rgb(30, 255, 0)
-}
-
 .letter[data-selected="true"] {
     cursor: not-allowed;
-    background-color: rgb(174, 223, 238)
+    background-color: rgb(219, 216, 197);
+}
+
+.letter[data-correct="true"] {
+    background-color: rgb(174, 223, 238);
 }

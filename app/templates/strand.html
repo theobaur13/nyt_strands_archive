@@ -1,10 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h3>Today's Theme</h3>
-<h2>{{ strand.theme }}</h2>
-<div class="word-grid"></div>
-<div class="console"></div>
+<div class="game-container">
+    <div class="theme-box">
+        <h3>TODAY'S THEME</h3>
+        <h2>{{ strand.theme }}</h2>
+    </div>
+    
+    <div class="strand-box">
+        <h2 class="strand"> </h2>
+        <div class="word-grid"></div>
+    </div>
+</div>
+
 <script src="{{ url_for('static', filename='js/word_grid.js') }}"></script>
 <script>
     const strand = {{ strand|tojson }};
@@ -95,7 +103,14 @@
             }
         });
 
+        // add the letter to the selected letters
         selected_letters.push(letterElement);
+
+        // display the concatenated selected letters in the strand span
+        const selected_letters_text = selected_letters.map(letter => letter.textContent).join('');
+        document.querySelector('.strand').textContent = selected_letters_text;
+
+        // set the letter as selected
         letterElement.setAttribute('data-selected', 'true');
     }
 
@@ -116,7 +131,14 @@
             }
         });
 
+        // remove the letter from the selected letters
         selected_letters = selected_letters.filter(letter => letter !== letterElement);
+
+        // display the concatenated selected letters in the strand span
+        const selected_letters_text = selected_letters.map(letter => letter.textContent).join('');
+        document.querySelector('.strand').textContent = selected_letters_text;
+
+        // set the letter as unselected
         letterElement.setAttribute('data-selected', 'false');
     }
 
