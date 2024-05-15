@@ -1,4 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Home</h2>
+
+<h2>Calendar</h2>
+
+<a href="{{ url_for('calendar', date=last_month) }}" class="button">Last Month</a>
+<h3>{{ year }} - {{ month }}</h3>
+<a href="{{ url_for('calendar', date=next_month) }}" class="button">Next Month</a>
+
+<div class="calendar">
+{% for strand in strands %}
+    <a href="{{ url_for('strand', date=strand.date.strftime('%Y-%m-%d')) }}">{{ strand.date.day }}</a>
+{% endfor %}
+</div>
+
 {% endblock %}

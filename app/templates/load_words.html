@@ -7,7 +7,9 @@
 <button id="add-word-button">Add Word</button>
 <button id="clear-word-button">Clear Word</button>
 <button id="submit-words-button">Submit Words</button>
+
 <script>
+    // Set up global variables
     const strand = {{ strand|tojson }};
     const letters = {{ letters|tojson }};
     const word_grid = document.querySelector('.word-grid');
@@ -19,8 +21,9 @@
 <script src="{{ url_for('static', filename='js/word_grid.js') }}"></script>
 
 <script>
+    // Add the word grid to the page
     document.addEventListener('DOMContentLoaded', function() {
-        render_word_grid(strand, letters);
+        render_word_grid(letters, false);
     });
 
     document.getElementById('add-word-button').addEventListener('click', function() {
@@ -143,6 +146,7 @@
             });
             data.words.push(word_data);
         });
+        
         fetch('/data_loader', {
             method: 'POST',
             headers: {

@@ -42,6 +42,17 @@ class Words(db.Model):
     strand_id = db.Column(db.Integer, db.ForeignKey("strand.id"), nullable=False)
     strand = db.relationship("Strand", backref=db.backref("words", lazy=True))
 
+    def __repr__(self):
+        return f"Word('{self.word}')"
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "word": self.word,
+            "spanagram": self.spanagram,
+            "strand_id": self.strand_id
+        }
+
 class WordLetters(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     index = db.Column(db.Integer, nullable=False)
@@ -49,6 +60,17 @@ class WordLetters(db.Model):
     word = db.relationship("Words", backref=db.backref("word_letters", lazy=True))
     letter_id = db.Column(db.Integer, db.ForeignKey("letters.id"), nullable=False)
     letter = db.relationship("Letters", backref=db.backref("word_letters", lazy=True))
+
+    def __repr__(self):
+        return f"WordLetter('{self.index}')"
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "index": self.index,
+            "word_id": self.word_id,
+            "letter_id": self.letter_id
+        }
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)

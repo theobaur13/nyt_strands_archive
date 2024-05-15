@@ -5,10 +5,50 @@ from app.forms import LoginForm, DateForm, ThemeLetterGridForm
 from app.models import User, Strand, Letters, Words, WordLetters
 from werkzeug.security import check_password_hash
 from datetime import timedelta, datetime
+from sqlalchemy import extract
 
 @app.route("/")
 def index():
-    return render_template("home.html", title="Home")
+    return redirect(url_for("calendar", date=datetime.now().strftime("%Y-%m-%d")))
+
+@app.route("/<date>")
+def calendar(date):
+    year, month, day = date.split("-")
+    year = int(year)
+    month = int(month)
+    # Get strands for that month
+    strands = Strand.query.filter(
+        extract('year', Strand.date) == year,
+        extract('month', Strand.date) == month
+    ).order_by(Strand.date).all()
+
+    last_month = str(year) + "-" + str(month - 1) + "-" + str(day)
+    next_month = str(year) + "-" + str(month + 1) + "-" + str(day)
+    return render_template("home.html", title="Home", strands=strands, year=year, month=month, last_month=last_month, next_month=next_month)
+
+@app.route("/strand/<date>")
+def strand(date):
+    # Retrieve the strand
+    year, month, day = date.split("-")
+    datetime_date = datetime(year=int(year), month=int(month), day=int(day))
+    strand = Strand.query.filter_by(date=datetime_date).first()
+
+    if not strand:
+        flash(f"No strand found for {date}", "danger")
+        return redirect(url_for("index"))
+
+    # Retrieve the letters, words, and wordletters
+    letters = Letters.query.filter_by(strand_id=strand.id).all()
+    words = Words.query.filter_by(strand_id=strand.id).all()
+    wordletters = WordLetters.query.join(Words).filter_by(strand_id=strand.id).all()
+
+    # Convert to dictionaries
+    strand_dict = strand.to_dict()
+    letters_dict = [letter.to_dict() for letter in letters]
+    words_dict = [word.to_dict() for word in words]
+    wordletters_dict = [wordletter.to_dict() for wordletter in wordletters]
+
+    return render_template("strand.html", title="Strand", date=date, strand=strand_dict, letters=letters_dict, words=words_dict, wordletters=wordletters_dict, theme=strand.theme)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -124,11 +164,12 @@ def data_loader():
     words = data["words"]
 
     # Delete existing words and wordletters
-    Words.query.filter_by(strand_id=strand_id).delete()
     word_ids = [word.id for word in Words.query.filter_by(strand_id=strand_id).all()]
 
     if word_ids:
         WordLetters.query.filter(WordLetters.word_id.in_(word_ids)).delete(synchronize_session='fetch')
+        
+    Words.query.filter_by(strand_id=strand_id).delete()
 
     # Add words to the database
     for word in words:

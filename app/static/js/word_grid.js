@@ -1,10 +1,12 @@
-function render_word_grid(strand, letters) {
+function render_word_grid(letters, initially_clickable) {
     const wordGrid = document.querySelector('.word-grid');
     const wordGridItems = letters.sort((a, b) => a.index - b.index).map(letter => {
         const div = document.createElement('div');
         div.classList.add('letter');
         div.id = `${letter.index}`;
-        div.setAttribute('data-clickable', "False");
+        div.setAttribute('data-selected', 'false');
+        div.setAttribute('data-clickable', initially_clickable);
+        div.setAttribute('data-correct', 'false');
         div.textContent = letter.letter;
         return div;
     });
