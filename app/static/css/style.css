@@ -1,5 +1,91 @@
+body {
+    font-family: 'Moulpali', cursive;
+    text-align: center;
+    background-color: white;
+    color: #171717;
+}
 
-/* used in loader */
+#content {
+    max-width: 840px;
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 70vh;
+}
+
+section{
+    text-align: left;
+    padding-bottom: 20px;
+    margin: 20px;
+    background-color: #EDEDED;
+    border-radius: 3px;
+    border: 2px solid #444444;
+    box-shadow: 2px 2px 0 #444444;
+}
+
+section h2{
+    text-align: center;
+    margin: 0px;
+    background-color: rgb(192, 221, 217);
+}
+
+.calendar-bar a {
+    text-decoration: none;
+    color: #171717;
+    font-weight: bold;
+}
+
+.button {
+    border-radius: 3px;
+    border: 2px solid #444444;
+    box-shadow: 2px 2px 0 #444444;
+    min-width: 100px;
+    background-color: rgb(192, 221, 217);
+}
+
+.button:hover {
+    background-color: #444444;
+    color: white;
+    scale: 1.1;
+}
+
+.date {
+    min-width: 120px;
+}
+
+.calendar {
+
+}
+
+.calendar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(7, 50px);
+    gap: 5px;
+}
+
+.day {
+    border-radius: 3px;
+    border: 2px solid #444444;
+    box-shadow: 2px 2px 0 #444444;
+    width: 40px;
+    height: 40px;
+    background-color: rgb(192, 221, 217);
+}
+
+.day:hover {
+    background-color: #444444;
+    color: white;
+    scale: 1.1;
+}
+
+.day a {
+    text-decoration: none;
+    color: #171717;
+}
+
+/* loader */
 .word-grid {
     display: grid;
     grid-template-columns: repeat(6, 54px);
@@ -16,7 +102,6 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    margin-top: 20px;
 }
 
 .theme-box {
@@ -101,4 +186,16 @@
 
 .letter[data-correct="true"] {
     background-color: rgb(174, 223, 238);
+}
+
+.calendar-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media all and (max-width: 767px) {
+    .game-container {
+        flex-direction: column;
+    }
 }
