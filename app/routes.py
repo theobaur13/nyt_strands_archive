@@ -11,11 +11,16 @@ from sqlalchemy import extract
 def index():
     return redirect(url_for("calendar", date=datetime.now().strftime("%Y-%m-%d")))
 
+@app.route('/favicon.ico')
+def favicon():
+    return redirect(url_for('static', filename='favicon.ico'))
+
 @app.route("/<date>")
 def calendar(date):
     year, month, day = date.split("-")
     year = int(year)
     month = int(month)
+    
     # Get strands for that month
     strands = Strand.query.filter(
         extract('year', Strand.date) == year,
