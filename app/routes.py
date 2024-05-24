@@ -6,30 +6,55 @@ from app.models import User, Strand, Letters, Words, WordLetters
 from werkzeug.security import check_password_hash
 from datetime import timedelta, datetime
 from sqlalchemy import extract
+import calendar
 
 @app.route("/")
 def index():
-    return redirect(url_for("calendar", date=datetime.now().strftime("%Y-%m-%d")))
+    return redirect(url_for("home", date=datetime.now().strftime("%Y-%m-%d")))
 
 @app.route('/favicon.ico')
 def favicon():
     return redirect(url_for('static', filename='favicon.ico'))
 
 @app.route("/<date>")
-def calendar(date):
+def home(date):
     year, month, day = date.split("-")
     year = int(year)
     month = int(month)
     
     # Get strands for that month
-    strands = Strand.query.filter(
+    strands_query = Strand.query.filter(
         extract('year', Strand.date) == year,
         extract('month', Strand.date) == month
     ).order_by(Strand.date).all()
 
-    last_month = str(year) + "-" + str(month - 1) + "-" + str(day)
-    next_month = str(year) + "-" + str(month + 1) + "-" + str(day)
-    return render_template("home.html", title="Home", strands=strands, year=year, month=month, last_month=last_month, next_month=next_month)
+    # Organize strands by date
+    strands = {strand.date.strftime('%Y-%m-%d'): strand for strand in strands_query}
+
+    # Get first day of the month and number of days in the month
+    first_day = datetime(year, month, 1)
+    first_day_weekday = first_day.weekday()  # Monday is 0 and Sunday is 6
+    first_day_weekday = (first_day_weekday + 1) % 7  # Adjusting to make Sunday 0
+    num_days = calendar.monthrange(year, month)[1]
+
+    # Calculate last and next month
+    last_month_date = first_day - timedelta(days=1)
+    next_month_date = (first_day.replace(day=28) + timedelta(days=4)).replace(day=1)
+
+    last_month = last_month_date.strftime("%Y-%m-%d")
+    next_month = next_month_date.strftime("%Y-%m-%d")
+
+    return render_template(
+        "home.html",
+        title="Home",
+        strands=strands,
+        year=year,
+        month=f"{month:02d}", 
+        last_month=last_month,
+        next_month=next_month,
+        first_day_weekday=first_day_weekday,
+        num_days=num_days
+    )
 
 @app.route("/strand/<date>")
 def strand(date):
@@ -53,7 +78,16 @@ def strand(date):
     words_dict = [word.to_dict() for word in words]
     wordletters_dict = [wordletter.to_dict() for wordletter in wordletters]
 
-    return render_template("strand.html", title="Strand", date=date, strand=strand_dict, letters=letters_dict, words=words_dict, wordletters=wordletters_dict, theme=strand.theme)
+    return render_template(
+        "strand.html",
+        title="Strand",
+        date=date,
+        strand=strand_dict,
+        letters=letters_dict,
+        words=words_dict,
+        wordletters=wordletters_dict,
+        theme=strand.theme
+    )
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -72,7 +106,11 @@ def login():
                 flash(f"Logged in {form_username}!", "success")
                 return redirect(url_for("loader"))
         flash(f"Login unsuccessful. Please check username and password", "danger")
-    return render_template("login.html", title="Login", form=form)
+    return render_template(
+        "login.html",
+        title="Login",
+        form=form
+    )
 
 @app.route("/logout")
 @login_required
@@ -88,7 +126,11 @@ def loader():
     if form.validate_on_submit():
         date = form.date.data
         return redirect(url_for("load_date", date=date))
-    return render_template("loader.html", title="Admin Loader", form=form)
+    return render_template(
+        "loader.html",
+        title="Admin Loader",
+        form=form
+    )
 
 @app.route("/loader/<date>", methods=["GET", "POST"])
 @login_required
@@ -140,7 +182,13 @@ def load_date(date):
         db.session.commit()
         flash(f"Successfully loaded date {date}", "success")
         return redirect(url_for("load_words", date=date))
-    return render_template("load_date.html", title="Load Strand", date=date, existing_strand=existing_strand, theme_letter_grid_form=theme_letter_grid_form)
+    return render_template(
+        "load_date.html",
+        title="Load Strand",
+        date=date,
+        existing_strand=existing_strand,
+        theme_letter_grid_form=theme_letter_grid_form
+    )
 
 @app.route("/loader/words/<date>")
 @login_required
@@ -159,7 +207,13 @@ def load_words(date):
     else:
         return redirect(url_for("load_date", date=date))
     
-    return render_template("load_words.html", title="Load Words", date=date, strand=strand_dict, letters=letters_dict)
+    return render_template(
+        "load_words.html",
+        title="Load Words",
+        date=date,
+        strand=strand_dict,
+        letters=letters_dict
+    )
 
 @app.route("/data_loader", methods=["GET", "POST"])
 @login_required

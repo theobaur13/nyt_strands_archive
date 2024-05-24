@@ -4,9 +4,9 @@
 <h2>Calendar</h2>
 
 <div class="calendar-bar">
-    <a href="{{ url_for('calendar', date=last_month) }}" class="button">Last Month</a>
+    <a href="{{ url_for('home', date=last_month) }}" class="button">Last Month</a>
     <h3 class="date">{{ year }} - {{ month }}</h3>
-    <a href="{{ url_for('calendar', date=next_month) }}" class="button">Next Month</a>
+    <a href="{{ url_for('home', date=next_month) }}" class="button">Next Month</a>
 </div>
 
 <div class="calendar">
@@ -19,11 +19,28 @@
         <li>Fri</li>
         <li>Sat</li>
     </ul>
-    {% for strand in strands %}
-        <div class="day">
-            <a href="{{ url_for('strand', date=strand.date.strftime('%Y-%m-%d')) }}">{{ strand.date.day }}</a>
-        </div>
-    {% endfor %}
+    <div class="days">
+        {% for _ in range(first_day_weekday) %}
+            <div class="day empty"></div>
+        {% endfor %}
+        {% for day in range(1, num_days + 1) %}
+            {% set date = year ~ '-' ~ month|e ~ '-' ~ '%02d'|format(day) %}
+            {% set strand = strands.get(date) %}
+            <div class="day {% if not strand %}no-link{% endif %}">
+                {% if strand %}
+                    <a href="{{ url_for('strand', date=date) }}">{{ day }}</a>
+                {% else %}
+                    {{ day }}
+                {% endif %}
+            </div>
+            {% if (first_day_weekday + day) % 7 == 0 %}
+                </div><div class="days">
+            {% endif %}
+        {% endfor %}
+        {% for _ in range((first_day_weekday + num_days) % 7, 7) %}
+            <div class="day empty"></div>
+        {% endfor %}
+    </div>
 </div>
 
 <section>

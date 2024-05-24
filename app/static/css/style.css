@@ -53,25 +53,45 @@ section h2{
 }
 
 .calendar {
-
+    width: 40%;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr); /* 7 columns for the days of the week */
+    gap: 5px;
+    margin: auto;
 }
 
-.calendar ul {
+.calendar ul.week {
     list-style-type: none;
     padding: 0;
     margin: 0;
     display: grid;
-    grid-template-columns: repeat(7, 50px);
+    grid-template-columns: repeat(7, 1fr); /* 7 columns for the days of the week */
+    gap: 5px;
+    text-align: center;
+}
+
+.days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 columns for the days of the week */
     gap: 5px;
 }
 
 .day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 3px;
     border: 2px solid #444444;
     box-shadow: 2px 2px 0 #444444;
     width: 40px;
     height: 40px;
     background-color: rgb(192, 221, 217);
+    text-align: center;
+    margin: auto;
+}
+
+.day.no-link {
+    background-color: #a3a3a3; /* Grey color for days without a link */
 }
 
 .day:hover {
@@ -83,6 +103,16 @@ section h2{
 .day a {
     text-decoration: none;
     color: #171717;
+}
+
+.day.empty {
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+}
+
+.day.empty:hover {
+    background-color: transparent;
 }
 
 /* loader */
