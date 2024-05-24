@@ -76,6 +76,11 @@ section h2{
     gap: 5px;
 }
 
+.days a {
+    text-decoration: none;
+    color: #171717;
+}
+
 .day {
     display: flex;
     align-items: center;
@@ -98,11 +103,6 @@ section h2{
     background-color: #444444;
     color: white;
     scale: 1.1;
-}
-
-.day a {
-    text-decoration: none;
-    color: #171717;
 }
 
 .day.empty {

@@ -26,13 +26,17 @@
         {% for day in range(1, num_days + 1) %}
             {% set date = year ~ '-' ~ month|e ~ '-' ~ '%02d'|format(day) %}
             {% set strand = strands.get(date) %}
-            <div class="day {% if not strand %}no-link{% endif %}">
-                {% if strand %}
-                    <a href="{{ url_for('strand', date=date) }}">{{ day }}</a>
-                {% else %}
+            {% if strand %}
+                <a href="{{ url_for('strand', date=date) }}" class="day-link">
+                    <div class="day">
+                        {{ day }}
+                    </div>
+                </a>
+            {% else %}
+                <div class="day no-link">
                     {{ day }}
-                {% endif %}
-            </div>
+                </div>
+            {% endif %}
             {% if (first_day_weekday + day) % 7 == 0 %}
                 </div><div class="days">
             {% endif %}
