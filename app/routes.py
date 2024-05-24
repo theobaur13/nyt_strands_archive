@@ -18,9 +18,15 @@ def favicon():
 
 @app.route("/<date>")
 def home(date):
-    year, month, day = date.split("-")
-    year = int(year)
-    month = int(month)
+    try:
+        # Attempt to parse the date
+        year, month, day = map(int, date.split("-"))
+        datetime_date = datetime(year, month, day)
+    except (ValueError, TypeError):
+        # If parsing fails, redirect to the current month's calendar
+        flash("Invalid date format. Redirected to the current month.", "danger")
+        return redirect(url_for("home", date=datetime.now().strftime("%Y-%m-%d")))
+
     
     # Get strands for that month
     strands_query = Strand.query.filter(
